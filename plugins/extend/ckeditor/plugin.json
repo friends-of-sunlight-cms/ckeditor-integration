@@ -1,0 +1,16 @@
+{
+    "name": "CKEditor Editor",
+    "description": "Advanced WYSWIYG HTML editor",
+    "version": "8.0",
+    "api": "^8.0",
+    "url": "https://jdanek.eu/",
+    "class": "CkeditorPlugin",
+    "langs": {
+        "ckeditor": "Resources/languages/"
+    },
+    "events.admin": [
+        ["admin.head", "$this::onHead"],
+        ["admin.wysiwyg", "$this::onWysiwyg"],
+        ["core.javascript", "$this::onCoreJavascript"]
+    ]
+}
