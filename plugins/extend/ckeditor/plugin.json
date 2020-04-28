@@ -1,7 +1,7 @@
 {
     "name": "CKEditor Editor",
     "description": "Advanced WYSWIYG HTML editor",
-    "version": "8.0",
+    "version": "1.0",
     "api": "^8.0",
     "url": "https://jdanek.eu/",
     "class": "CkeditorPlugin",
