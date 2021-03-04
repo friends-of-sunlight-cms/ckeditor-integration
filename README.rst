@@ -1,7 +1,7 @@
 Wysiwyg CKEditor Plugin
 #######################
 
-Implementation of CKEditor  - advanced WYSWIYG HTML editor
+Integration of CKEditor  - advanced WYSWIYG HTML editor
 
 .. contents::
 
