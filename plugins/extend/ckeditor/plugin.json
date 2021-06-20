@@ -1,4 +1,5 @@
 {
+    "$schema": "../../../system/schema/extend.json",
     "name": "CKEditor Editor",
     "description": "Advanced WYSWIYG HTML editor",
     "version": "1.0",
