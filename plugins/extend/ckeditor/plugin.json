@@ -10,8 +10,8 @@
         "ckeditor": "Resources/languages/"
     },
     "events.admin": [
-        ["admin.head", "$this::onHead"],
-        ["admin.wysiwyg", "$this::onWysiwyg"],
-        ["core.javascript", "$this::onCoreJavascript"]
+        {"event": "admin.head", "method": "onHead"},
+        {"event": "admin.wysiwyg", "method": "onWysiwyg"},
+        {"event": "core.javascript", "method": "onCoreJavascript"}
     ]
 }
