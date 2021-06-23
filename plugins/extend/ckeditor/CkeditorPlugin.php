@@ -4,6 +4,7 @@ namespace SunlightExtend\Ckeditor;
 
 use Sunlight\Core;
 use Sunlight\Plugin\Action\ConfigAction;
+use Sunlight\Plugin\Action\PluginAction;
 use Sunlight\Plugin\ExtendPlugin;
 use Sunlight\Util\Form;
 
@@ -16,9 +17,9 @@ class CkeditorPlugin extends ExtendPlugin
 {
     private $wysiwygDetected = false;
 
-    protected function getConfigDefaults()
+    protected function getConfigDefaults(): array
     {
-        return array(
+        return [
             'editor_mode' => 'basic',
             'mode_by_priv' => false,
             // privileges
@@ -28,13 +29,13 @@ class CkeditorPlugin extends ExtendPlugin
             'priv_max_basic' => 1000,
             'priv_min_advanced' => 10000,
             'priv_max_advanced' => 10001,
-        );
+        ];
     }
 
     /**
      * @param array $args
      */
-    public function onHead(array $args)
+    public function onHead(array $args): void
     {
         if (_logged_in && !$this->isDisabled() && !$this->wysiwygDetected && (bool)Core::$userData['wysiwyg'] === true) {
             $args['js'][] = $this->getWebPath() . '/Resources/ckeditor/ckeditor.js';
@@ -44,7 +45,7 @@ class CkeditorPlugin extends ExtendPlugin
             // mode by priv
             if ($this->getConfig()->offsetGet('mode_by_priv') === true) {
 
-                foreach (array('limited', 'basic', 'advanced') as $mode) {
+                foreach (['limited', 'basic', 'advanced'] as $mode) {
                     if (_priv_level >= $this->getConfig()->offsetGet('priv_min_' . $mode)
                         && (_priv_level <= $this->getConfig()->offsetGet('priv_max_' . $mode))) {
                         $active_mode = $mode;
@@ -59,7 +60,7 @@ class CkeditorPlugin extends ExtendPlugin
     /**
      * @param $args
      */
-    public function onWysiwyg($args)
+    public function onWysiwyg($args): void
     {
         if ($args['available']) {
             $this->wysiwygDetected = true;
@@ -71,14 +72,14 @@ class CkeditorPlugin extends ExtendPlugin
     /**
      * @param array $args
      */
-    public function onCoreJavascript(array $args)
+    public function onCoreJavascript(array $args): void
     {
-        $args['variables']['pluginWysiwyg'] = array(
+        $args['variables']['pluginWysiwyg'] = [
             'systemLang' => _language,
-        );
+        ];
     }
 
-    public function getAction($name)
+    public function getAction(string $name): PluginAction
     {
         if ($name == 'config') {
             return new CustomConfig($this);
@@ -89,42 +90,42 @@ class CkeditorPlugin extends ExtendPlugin
 
 class CustomConfig extends ConfigAction
 {
-    protected function getFields()
+    protected function getFields(): array
     {
-        $modes = array(
+        $modes = [
             _lang('ckeditor.limited') => 'limited',
             _lang('ckeditor.basic') => 'basic',
             _lang('ckeditor.advanced') => 'advanced'
-        );
+        ];
 
-        $fields = array(
-            'editor_mode' => array(
+        $fields = [
+            'editor_mode' => [
                 'label' => _lang('ckeditor.mode'),
                 'input' => $this->createSelect('editor_mode', $modes, $this->plugin->getConfig()->offsetGet('editor_mode')),
                 'type' => 'text'
-            ),
-            'mode_by_priv' => array(
+            ],
+            'mode_by_priv' => [
                 'label' => _lang('ckeditor.mode_by_priv'),
                 'input' => $this->createInput('checkbox', 'mode_by_priv'),
                 'type' => 'checkbox'
-            ),
-        );
+            ],
+        ];
 
-        foreach (array('limited', 'basic', 'advanced') as $v) {
-            foreach (array('min', 'max') as $v2) {
+        foreach (['limited', 'basic', 'advanced'] as $v) {
+            foreach (['min', 'max'] as $v2) {
                 $name = 'priv_' . $v2 . '_' . $v;
-                $fields[$name] = array(
+                $fields[$name] = [
                     'label' => _lang('ckeditor.' . $name),
-                    'input' => $this->createInput('number', $name, array('min' => 0, 'max' => _priv_max_level)),
+                    'input' => $this->createInput('number', $name, ['min' => 0, 'max' => _priv_max_level]),
                     'type' => 'text'
-                );
+                ];
             }
         }
 
         return $fields;
     }
 
-    private function createSelect($name, $options, $default)
+    private function createSelect($name, $options, $default): string
     {
         $result = "<select name='config[" . $name . "]'>";
         foreach ($options as $k => $v) {
@@ -134,14 +135,14 @@ class CustomConfig extends ConfigAction
         return $result;
     }
 
-    private function createInput($type, $name, $attributes = null)
+    private function createInput($type, $name, $attributes = null): string
     {
         $result = "";
-        $attr = array();
+        $attr = [];
 
         if (is_array($attributes)) {
             foreach ($attributes as $k => $v) {
-                if (is_integer($k)) {
+                if (is_int($k)) {
                     $attr[] = $v . '=' . $v;
                 } else {
                     $attr[] = $k . '=' . $v;
