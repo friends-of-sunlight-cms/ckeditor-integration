@@ -6,6 +6,7 @@ use Sunlight\Core;
 use Sunlight\Plugin\Action\ConfigAction;
 use Sunlight\Plugin\Action\PluginAction;
 use Sunlight\Plugin\ExtendPlugin;
+use Sunlight\User;
 use Sunlight\Util\Form;
 
 /**
@@ -37,7 +38,7 @@ class CkeditorPlugin extends ExtendPlugin
      */
     public function onHead(array $args): void
     {
-        if (_logged_in && !$this->isDisabled() && !$this->wysiwygDetected && (bool)Core::$userData['wysiwyg'] === true) {
+        if (User::isLoggedIn() && !$this->isDisabled() && !$this->wysiwygDetected && (bool)User::$data['wysiwyg'] === true) {
             $args['js'][] = $this->getWebPath() . '/Resources/ckeditor/ckeditor.js';
 
             $active_mode = $this->getConfig()->offsetGet('editor_mode');
@@ -46,8 +47,8 @@ class CkeditorPlugin extends ExtendPlugin
             if ($this->getConfig()->offsetGet('mode_by_priv') === true) {
 
                 foreach (['limited', 'basic', 'advanced'] as $mode) {
-                    if (_priv_level >= $this->getConfig()->offsetGet('priv_min_' . $mode)
-                        && (_priv_level <= $this->getConfig()->offsetGet('priv_max_' . $mode))) {
+                    if (User::getLevel() >= $this->getConfig()->offsetGet('priv_min_' . $mode)
+                        && (User::getLevel() <= $this->getConfig()->offsetGet('priv_max_' . $mode))) {
                         $active_mode = $mode;
                     }
                 }
@@ -64,7 +65,7 @@ class CkeditorPlugin extends ExtendPlugin
     {
         if ($args['available']) {
             $this->wysiwygDetected = true;
-        } elseif (_logged_in && !$this->isDisabled() && (bool)Core::$userData['wysiwyg']) {
+        } elseif (User::isLoggedIn() && !$this->isDisabled() && (bool)User::$data['wysiwyg'] === true) {
             $args['available'] = true;
         }
     }
@@ -81,7 +82,7 @@ class CkeditorPlugin extends ExtendPlugin
 
     public function getAction(string $name): PluginAction
     {
-        if ($name == 'config') {
+        if ($name === 'config') {
             return new CustomConfig($this);
         }
         return parent::getAction($name);
@@ -116,7 +117,7 @@ class CustomConfig extends ConfigAction
                 $name = 'priv_' . $v2 . '_' . $v;
                 $fields[$name] = [
                     'label' => _lang('ckeditor.' . $name),
-                    'input' => $this->createInput('number', $name, ['min' => 0, 'max' => _priv_max_level]),
+                    'input' => $this->createInput('number', $name, ['min' => 0, 'max' => User::MAX_LEVEL]),
                     'type' => 'text'
                 ];
             }
