@@ -76,7 +76,7 @@ class CkeditorPlugin extends ExtendPlugin
     public function onCoreJavascript(array $args): void
     {
         $args['variables']['pluginWysiwyg'] = [
-            'systemLang' => _language,
+            'systemLang' => Core::$lang,
         ];
     }
 
