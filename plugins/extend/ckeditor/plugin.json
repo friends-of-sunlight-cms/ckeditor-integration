@@ -9,7 +9,7 @@
     "url": "https://github.com/friends-of-sunlight-cms/",
     "class": "CkeditorPlugin",
     "langs": {
-        "ckeditor": "Resources/languages/"
+        "ckeditor": "resources/languages/"
     },
     "events.admin": [
         {"event": "admin.head", "method": "onHead"},

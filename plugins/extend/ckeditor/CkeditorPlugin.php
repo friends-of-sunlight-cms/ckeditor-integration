@@ -39,7 +39,7 @@ class CkeditorPlugin extends ExtendPlugin
     public function onHead(array $args): void
     {
         if (User::isLoggedIn() && !$this->isDisabled() && !$this->wysiwygDetected && (bool)User::$data['wysiwyg'] === true) {
-            $args['js'][] = $this->getWebPath() . '/Resources/ckeditor/ckeditor.js';
+            $args['js'][] = $this->getWebPath() . '/resources/ckeditor/ckeditor.js';
 
             $active_mode = $this->getConfig()->offsetGet('editor_mode');
 
@@ -54,7 +54,7 @@ class CkeditorPlugin extends ExtendPlugin
                 }
             }
 
-            $args['js'][] = $this->getWebPath() . '/Resources/wysiwyg_' . $active_mode . '.js';
+            $args['js'][] = $this->getWebPath() . '/resources/wysiwyg_' . $active_mode . '.js';
         }
     }
 
