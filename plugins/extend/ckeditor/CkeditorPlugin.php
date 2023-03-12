@@ -9,33 +9,13 @@ use Sunlight\Plugin\ExtendPlugin;
 use Sunlight\User;
 use Sunlight\Util\Form;
 
-/**
- * CKEditor plugin
- *
- * @author Jirka Daněk <jdanek.eu>
- */
 class CkeditorPlugin extends ExtendPlugin
 {
+    /** @var bool */
     private $wysiwygDetected = false;
 
-    protected function getConfigDefaults(): array
-    {
-        return [
-            'editor_mode' => 'basic',
-            'mode_by_priv' => false,
-            // privileges
-            'priv_min_limited' => 1,
-            'priv_max_limited' => 500,
-            'priv_min_basic' => 600,
-            'priv_max_basic' => 1000,
-            'priv_min_advanced' => 10000,
-            'priv_max_advanced' => 10001,
-        ];
-    }
 
-    /**
-     * @param array $args
-     */
+
     public function onHead(array $args): void
     {
         if (User::isLoggedIn() && !$this->isDisabled() && !$this->wysiwygDetected && (bool)User::$data['wysiwyg'] === true) {
@@ -58,10 +38,7 @@ class CkeditorPlugin extends ExtendPlugin
         }
     }
 
-    /**
-     * @param $args
-     */
-    public function onWysiwyg($args): void
+    public function onWysiwyg(array $args): void
     {
         if ($args['available']) {
             $this->wysiwygDetected = true;
@@ -70,9 +47,6 @@ class CkeditorPlugin extends ExtendPlugin
         }
     }
 
-    /**
-     * @param array $args
-     */
     public function onCoreJavascript(array $args): void
     {
         $args['variables']['pluginWysiwyg'] = [
@@ -80,7 +54,28 @@ class CkeditorPlugin extends ExtendPlugin
         ];
     }
 
-    public function getAction(string $name): PluginAction
+    /**
+     * ============================================================================
+     *  EXTEND CONFIGURATION
+     * ============================================================================
+     */
+
+    protected function getConfigDefaults(): array
+    {
+        return [
+            'editor_mode' => 'basic',
+            'mode_by_priv' => false,
+            // privileges
+            'priv_min_limited' => 1,
+            'priv_max_limited' => 500,
+            'priv_min_basic' => 600,
+            'priv_max_basic' => 1000,
+            'priv_min_advanced' => 10000,
+            'priv_max_advanced' => 10001,
+        ];
+    }
+
+    public function getAction(string $name): ?PluginAction
     {
         if ($name === 'config') {
             return new CustomConfig($this);
