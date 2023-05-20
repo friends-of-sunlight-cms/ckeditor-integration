@@ -6,6 +6,7 @@ use Sunlight\Core;
 use Sunlight\Plugin\Action\ConfigAction;
 use Sunlight\Plugin\Action\PluginAction;
 use Sunlight\Plugin\ExtendPlugin;
+use Sunlight\Plugin\Plugin;
 use Sunlight\User;
 use Sunlight\Util\Form;
 
@@ -14,12 +15,10 @@ class CkeditorPlugin extends ExtendPlugin
     /** @var bool */
     private $wysiwygDetected = false;
 
-
-
     public function onHead(array $args): void
     {
-        if (User::isLoggedIn() && !$this->isDisabled() && !$this->wysiwygDetected && (bool)User::$data['wysiwyg'] === true) {
-            $args['js'][] = $this->getWebPath() . '/resources/ckeditor/ckeditor.js';
+        if (User::isLoggedIn() && !$this->hasStatus(Plugin::STATUS_DISABLED) && !$this->wysiwygDetected && (bool)User::$data['wysiwyg'] === true) {
+            $args['js'][] = $this->getWebPath() . '/public/ckeditor/ckeditor.js';
 
             $active_mode = $this->getConfig()->offsetGet('editor_mode');
 
@@ -34,7 +33,7 @@ class CkeditorPlugin extends ExtendPlugin
                 }
             }
 
-            $args['js'][] = $this->getWebPath() . '/resources/wysiwyg_' . $active_mode . '.js';
+            $args['js'][] = $this->getWebPath() . '/public/wysiwyg_' . $active_mode . '.js';
         }
     }
 
@@ -42,7 +41,7 @@ class CkeditorPlugin extends ExtendPlugin
     {
         if ($args['available']) {
             $this->wysiwygDetected = true;
-        } elseif (User::isLoggedIn() && !$this->isDisabled() && (bool)User::$data['wysiwyg'] === true) {
+        } elseif (User::isLoggedIn() && !$this->hasStatus(Plugin::STATUS_DISABLED) && (bool)User::$data['wysiwyg'] === true) {
             $args['available'] = true;
         }
     }
