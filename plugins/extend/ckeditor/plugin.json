@@ -2,7 +2,7 @@
     "$schema": "../../../system/schema/extend.json",
     "name": "CKEditor Editor",
     "description": "Advanced WYSWIYG HTML editor",
-    "version": "0.9.1",
+    "version": "0.9.2",
     "environment": {
         "system": "^8.0"
     },
@@ -10,6 +10,19 @@
         {"name": "Friends of Sunlight CMS", "url": "https://github.com/friends-of-sunlight-cms/"}
     ],
     "class": "CkeditorPlugin",
+    "config_defaults": {
+        "editor_mode": "basic",
+        "mode_by_priv": false,
+        "priv_min_limited": 1,
+        "priv_max_limited": 500,
+        "priv_min_basic": 600,
+        "priv_max_basic": 1000,
+        "priv_min_advanced": 10000,
+        "priv_max_advanced": 10001
+    },
+    "actions": {
+        "config": "ConfigAction"
+    },
     "langs": {
         "ckeditor": "lang"
     },
