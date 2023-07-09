@@ -3,22 +3,35 @@
 namespace SunlightExtend\Ckeditor;
 
 use Sunlight\Core;
-use Sunlight\Plugin\Action\ConfigAction;
-use Sunlight\Plugin\Action\PluginAction;
 use Sunlight\Plugin\ExtendPlugin;
 use Sunlight\Plugin\Plugin;
 use Sunlight\User;
-use Sunlight\Util\Form;
 
 class CkeditorPlugin extends ExtendPlugin
 {
+    private const SUPPORTED_FORMATS = [
+        'xml' => false,
+        'css' => false,
+        'js' => false,
+        'json' => false,
+        'php' => false,
+        'php-raw' => false,
+        'html' => true,
+    ];
+
     /** @var bool */
     private $wysiwygDetected = false;
 
-    public function onHead(array $args): void
+    public function onAdminInit(array $args): void
+    {
+        global $_admin;
+        $_admin->wysiwygAvailable = true;
+    }
+
+    public function onAdminHead(array $args): void
     {
         if (User::isLoggedIn() && !$this->hasStatus(Plugin::STATUS_DISABLED) && !$this->wysiwygDetected && (bool)User::$data['wysiwyg'] === true) {
-            $args['js'][] = $this->getWebPath() . '/public/ckeditor/ckeditor.js';
+            $args['js'][] = $this->getAssetPath('public/ckeditor/ckeditor.js');
 
             $active_mode = $this->getConfig()->offsetGet('editor_mode');
 
@@ -33,16 +46,34 @@ class CkeditorPlugin extends ExtendPlugin
                 }
             }
 
-            $args['js'][] = $this->getWebPath() . '/public/wysiwyg_' . $active_mode . '.js';
+            $args['js'][] = $this->getAssetPath('public/wysiwyg_' . $active_mode . '.js');
         }
     }
 
-    public function onWysiwyg(array $args): void
+    function onAdminEditor(array $args): void
     {
-        if ($args['available']) {
-            $this->wysiwygDetected = true;
-        } elseif (User::isLoggedIn() && !$this->hasStatus(Plugin::STATUS_DISABLED) && (bool)User::$data['wysiwyg'] === true) {
-            $args['available'] = true;
+        global $_admin;
+
+        $config = $this->getConfig();
+
+        if (
+            ($args['context'] === 'box-content' && $config['editor_in_boxes'] === false)
+            || (
+                ($args['context'] === 'page-perex' || $args['context'] === 'article-perex')
+                && $config['editor_in_perex'] === false
+            )
+        ) {
+            $args['options']['mode'] = 'code';
+        }
+
+        if (
+            isset(self::SUPPORTED_FORMATS[$args['options']['format']])
+            && $args['options']['mode'] === 'default'
+            && $_admin->wysiwygAvailable
+            && User::isLoggedIn()
+            && User::$data['wysiwyg']
+        ) {
+            $this->enableEventGroup('ckeditor');
         }
     }
 
@@ -52,4 +83,6 @@ class CkeditorPlugin extends ExtendPlugin
             'systemLang' => Core::$lang,
         ];
     }
+
+
 }
